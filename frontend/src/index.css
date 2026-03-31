@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --shell: #e0e0e0;
+  --shell-deep: #d5d5d5;
+  --light-shadow: #ffffff;
+  --dark-shadow: #b9b9b9;
+  --text-main: #213045;
+  --text-muted: #62718d;
+  --accent: #1f6feb;
+  --accent-soft: #dbe9ff;
+  --success-soft: #d6f5e4;
+  --danger-soft: #f7d7d7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.75), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(207, 225, 255, 0.5), transparent 30%),
+    linear-gradient(180deg, #e7e7e7 0%, var(--shell) 100%);
+  color: var(--text-main);
+  font-family: "Manrope", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.page-shell {
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.neo-card {
+  border-radius: 20px;
+  background: rgba(224, 224, 224, 0.94);
+  box-shadow:
+    12px 12px 24px var(--dark-shadow),
+    -12px -12px 24px var(--light-shadow);
+}
+
+.neo-card-soft {
+  border-radius: 20px;
+  background: rgba(224, 224, 224, 0.82);
+  box-shadow:
+    8px 8px 18px rgba(185, 185, 185, 0.85),
+    -8px -8px 18px rgba(255, 255, 255, 0.95);
+}
+
+.neo-inset {
+  border-radius: 18px;
+  background: var(--shell);
+  box-shadow:
+    inset 8px 8px 16px var(--dark-shadow),
+    inset -8px -8px 16px var(--light-shadow);
+}
+
+.neo-button {
+  border: none;
+  border-radius: 16px;
+  padding: 0.8rem 1.1rem;
+  background: linear-gradient(145deg, #ebebeb, #d7d7d7);
+  box-shadow:
+    8px 8px 18px var(--dark-shadow),
+    -8px -8px 18px var(--light-shadow);
+  color: var(--text-main);
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+}
+
+.neo-button:hover {
+  transform: translateY(-1px);
+}
+
+.neo-button:active {
+  transform: translateY(0);
+  box-shadow:
+    inset 6px 6px 14px var(--dark-shadow),
+    inset -6px -6px 14px var(--light-shadow);
+}
+
+.neo-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.neo-button-primary {
+  background: linear-gradient(145deg, #3f84ff, #1760dd);
+  color: #f8fbff;
+  box-shadow:
+    10px 10px 18px rgba(129, 151, 188, 0.52),
+    -10px -10px 18px rgba(255, 255, 255, 0.92);
+}
+
+.neo-input,
+.neo-textarea,
+.neo-select {
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  background: var(--shell);
+  color: var(--text-main);
+  box-shadow:
+    inset 8px 8px 16px var(--dark-shadow),
+    inset -8px -8px 16px var(--light-shadow);
+  padding: 0.9rem 1rem;
+  outline: none;
+}
+
+.neo-input:focus,
+.neo-textarea:focus,
+.neo-select:focus {
+  box-shadow:
+    inset 8px 8px 16px rgba(185, 185, 185, 0.95),
+    inset -8px -8px 16px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(31, 111, 235, 0.15);
+}
+
+.soft-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  background: rgba(219, 233, 255, 0.82);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.section-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.mesh-overlay {
+  position: relative;
+  overflow: hidden;
+}
+
+.mesh-overlay::after {
+  content: "";
+  position: absolute;
+  inset: auto -30% -45% auto;
+  width: 14rem;
+  height: 14rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(31, 111, 235, 0.18), transparent 70%);
+  pointer-events: none;
+}
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .panel-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-shell {
+    padding: 1rem;
+  }
+}
