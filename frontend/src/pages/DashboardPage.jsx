@@ -193,9 +193,9 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main className="page-shell flex items-center justify-center">
-        <LoadingState message="Loading admin dashboard..." />
-      </main>
+      <Layout narrow>
+        <LoadingState message="Loading dashboard..." />
+      </Layout>
     );
   }
 
@@ -216,73 +216,56 @@ export default function DashboardPage() {
   const privateCount = certificates.length - publicCount;
 
   return (
-    <Layout
-      actions={
-        <>
-          <Link className="neo-button" to="/profile">
-            <Globe size={16} />
-            Public View
-          </Link>
-          <button className="neo-button" onClick={logout} type="button">
-            <LogOut size={16} />
-            Logout
-          </button>
-        </>
-      }
-      eyebrow="Admin workspace"
-      subtitle={
-        <span className="block max-w-2xl text-sm leading-7 text-muted sm:text-base">
-          Signed in as <span className="font-semibold text-ink">{admin?.full_name || "Administrator"}</span>
-          {" · "}
-          <span className="break-all">{admin?.email}</span>
-        </span>
-      }
-      title="Certificate dashboard"
-    >
+    <Layout>
       <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="section-title text-3xl">Dashboard</h1>
+            <p className="mt-1 text-sm text-muted">
+              {admin?.full_name || "Administrator"}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Link className="neo-button" to="/profile">
+              <Globe size={16} />
+              Public
+            </Link>
+            <button className="neo-button" onClick={logout} type="button">
+              <LogOut size={16} />
+              Logout
+            </button>
+          </div>
+        </div>
+
         {error ? (
-          <div className="rounded-[18px] bg-dangerSoft px-4 py-3 text-sm font-semibold text-rose-700">
+          <div className="rounded-[18px] bg-dangerSoft px-4 py-3 text-sm font-semibold text-rose-600">
             {error}
           </div>
         ) : null}
 
         <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatsCard icon={Layers3} label="Total domains" value={domains.length} />
+          <StatsCard icon={Layers3} label="Domains" value={domains.length} />
           <StatsCard icon={ChartNoAxesColumn} label="Certificates" value={certificates.length} />
           <StatsCard icon={Globe} label="Public" value={publicCount} />
           <StatsCard icon={Lock} label="Private" value={privateCount} />
         </section>
 
         <section className="space-y-4">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <span className="neo-chip neo-chip-muted">Step 1</span>
-              <h2 className="section-title mt-3 text-2xl">Choose a domain</h2>
-              <p className="mt-2 text-sm text-muted">Domains come first. Certificates appear only after selection.</p>
-            </div>
+          <form className="grid gap-3 sm:grid-cols-[minmax(0,240px)_auto]" onSubmit={handleCreateDomain}>
+            <input
+              className="neo-input"
+              placeholder="New domain"
+              value={domainName}
+              onChange={(event) => setDomainName(event.target.value)}
+            />
+            <button className="neo-button neo-button-primary" type="submit">
+              <Plus size={16} />
+              Add Domain
+            </button>
+          </form>
 
-            <form className="grid gap-3 sm:grid-cols-[minmax(0,240px)_auto]" onSubmit={handleCreateDomain}>
-              <input
-                className="neo-input"
-                placeholder="Add a new domain"
-                value={domainName}
-                onChange={(event) => setDomainName(event.target.value)}
-              />
-              <button className="neo-button neo-button-primary" type="submit">
-                <Plus size={16} />
-                Add Domain
-              </button>
-            </form>
-          </div>
-
-          {!domains.length ? (
-            <div className="neo-panel p-8 text-center sm:p-10">
-              <h3 className="section-title text-xl sm:text-2xl">Create your first domain</h3>
-              <p className="mt-3 text-sm leading-7 text-muted sm:text-base">
-                Start with areas like AI, Cloud, Security, or Development before adding certificates.
-              </p>
-            </div>
-          ) : (
+          {domains.length ? (
             <motion.div
               animate="visible"
               className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
@@ -301,6 +284,10 @@ export default function DashboardPage() {
                 </motion.div>
               ))}
             </motion.div>
+          ) : (
+            <div className="neo-panel p-10 text-center">
+              <p className="section-title text-xl">Create a domain to start managing certificates</p>
+            </div>
           )}
         </section>
 
@@ -323,13 +310,10 @@ export default function DashboardPage() {
                     >
                       <span className="inline-flex items-center gap-2">
                         <ArrowLeft size={16} />
-                        Back to domains
+                        Domains
                       </span>
                     </button>
                     <h2 className="section-title mt-3 text-2xl sm:text-3xl">{selectedDomain.name}</h2>
-                    <p className="mt-2 text-sm text-muted">
-                      {visibleCertificates.length} certificate{visibleCertificates.length === 1 ? "" : "s"} in this domain
-                    </p>
                   </div>
 
                   <div className="flex flex-col gap-3 sm:flex-row">
@@ -337,7 +321,7 @@ export default function DashboardPage() {
                       <Search size={18} className="text-accent" />
                       <input
                         className="w-full bg-transparent outline-none"
-                        placeholder="Search title, issuer, or ID"
+                        placeholder="Search certificates"
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
                       />
@@ -370,28 +354,12 @@ export default function DashboardPage() {
                   ))}
                 </motion.div>
               ) : (
-                <div className="neo-panel p-8 text-center sm:p-10">
-                  <h3 className="section-title text-xl sm:text-2xl">No certificates yet</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted sm:text-base">
-                    Add the first certificate for {selectedDomain.name} or adjust the search query.
-                  </p>
+                <div className="neo-panel p-10 text-center">
+                  <p className="section-title text-xl">No certificates in this domain</p>
                 </div>
               )}
             </motion.section>
-          ) : (
-            <motion.section
-              key="dashboard-empty"
-              animate={{ opacity: 1, y: 0 }}
-              className="neo-panel p-8 text-center sm:p-10"
-              exit={{ opacity: 0, y: 12 }}
-              initial={{ opacity: 0, y: 18 }}
-            >
-              <h3 className="section-title text-xl sm:text-2xl">Step 2 starts after domain selection</h3>
-              <p className="mt-3 text-sm leading-7 text-muted sm:text-base">
-                Tap a domain above to reveal its certificate list and management actions.
-              </p>
-            </motion.section>
-          )}
+          ) : null}
         </AnimatePresence>
       </div>
 

@@ -29,44 +29,26 @@ export default function CertificateCard({
       onKeyDown={handleKeyDown}
     >
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <span className="neo-chip neo-chip-accent">{certificate.domain.name}</span>
-          <h3 className="section-title mt-4 text-lg leading-snug sm:text-xl">{certificate.title}</h3>
-          <p className="mt-2 text-sm text-muted">{certificate.issuer}</p>
-        </div>
-
+        <h3 className="section-title text-lg leading-snug sm:text-xl">{certificate.title}</h3>
         <span className={`neo-chip ${certificate.visibility === "public" ? "neo-chip-accent" : "neo-chip-muted"}`}>
           {toTitleCase(certificate.visibility)}
         </span>
       </div>
 
-      <div className="neo-inset flex items-center justify-between gap-3 px-4 py-3 text-sm text-ink/75">
+      <div className="neo-inset flex items-center justify-between gap-3 px-4 py-3 text-sm text-muted">
         <div className="flex items-center gap-2">
           <CalendarDays size={16} className="text-accent" />
           <span>{formatDate(certificate.issue_date)}</span>
         </div>
-        <span className="font-semibold text-accent">Open</span>
-      </div>
-
-      <div className="flex items-center justify-between gap-4 text-sm text-muted">
-        <span className="truncate">{certificate.certificate_number}</span>
         <ChevronRight size={18} className="text-accent" />
       </div>
 
       {isAdmin && (onEdit || onDelete) ? (
         <div className="flex gap-2 pt-1" onClick={(event) => event.stopPropagation()}>
-          <button
-            className="neo-icon-button"
-            onClick={() => onEdit?.(certificate)}
-            type="button"
-          >
+          <button className="neo-icon-button" onClick={() => onEdit?.(certificate)} type="button">
             <Pencil size={16} />
           </button>
-          <button
-            className="neo-icon-button text-rose-600"
-            onClick={() => onDelete?.(certificate)}
-            type="button"
-          >
+          <button className="neo-icon-button text-rose-600" onClick={() => onDelete?.(certificate)} type="button">
             <Trash2 size={16} />
           </button>
         </div>

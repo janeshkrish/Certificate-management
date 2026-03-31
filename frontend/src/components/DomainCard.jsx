@@ -12,8 +12,8 @@ export default function DomainCard({ domain, active = false, isAdmin = false, on
   return (
     <motion.article
       aria-label={`Open ${domain.name}`}
-      className={`neo-panel-soft flex h-full cursor-pointer flex-col justify-between gap-6 p-5 sm:p-6 ${
-        active ? "bg-[linear-gradient(145deg,#eff4ff,#dfe7ff)]" : ""
+      className={`neo-panel-soft flex h-full cursor-pointer flex-col justify-between gap-5 p-5 sm:p-6 ${
+        active ? "neo-panel-active" : ""
       }`}
       role="button"
       tabIndex={0}
@@ -23,39 +23,30 @@ export default function DomainCard({ domain, active = false, isAdmin = false, on
       onKeyDown={handleKeyDown}
     >
       <div className="flex items-start justify-between gap-3">
-        <span className={`neo-chip ${active ? "neo-chip-accent" : "neo-chip-muted"}`}>
-          {active ? "Selected" : "Domain"}
-        </span>
-
-        <div className="flex items-center gap-2">
-          <span className="neo-chip neo-chip-muted">{domain.certificate_count || 0}</span>
-          {isAdmin && onDelete ? (
-            <button
-              aria-label={`Delete ${domain.name}`}
-              className="neo-icon-button text-rose-600"
-              onClick={(event) => {
-                event.stopPropagation();
-                onDelete(domain);
-              }}
-              type="button"
-            >
-              <Trash2 size={16} />
-            </button>
-          ) : null}
+        <div className="neo-inset flex h-12 w-12 items-center justify-center rounded-[18px]">
+          <FolderKanban size={20} className="text-accent" />
         </div>
+
+        {isAdmin && onDelete ? (
+          <button
+            aria-label={`Delete ${domain.name}`}
+            className="neo-icon-button text-rose-600"
+            onClick={(event) => {
+              event.stopPropagation();
+              onDelete(domain);
+            }}
+            type="button"
+          >
+            <Trash2 size={16} />
+          </button>
+        ) : null}
       </div>
 
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h3 className="section-title text-xl sm:text-2xl">{domain.name}</h3>
-          <p className="mt-2 text-sm leading-6 text-muted">
-            {domain.certificate_count || 0} certificate{domain.certificate_count === 1 ? "" : "s"}
-          </p>
-        </div>
-
-        <div className="neo-inset flex h-14 w-14 items-center justify-center rounded-[18px]">
-          <FolderKanban size={22} className="text-accent" />
-        </div>
+      <div className="space-y-2">
+        <h3 className="section-title text-xl sm:text-2xl">{domain.name}</h3>
+        <p className="text-sm text-muted">
+          {domain.certificate_count || 0} certificate{domain.certificate_count === 1 ? "" : "s"}
+        </p>
       </div>
     </motion.article>
   );

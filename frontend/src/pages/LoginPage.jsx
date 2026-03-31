@@ -1,6 +1,5 @@
-import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { getApiErrorMessage } from "../api/client";
 import Layout from "../components/Layout";
@@ -33,15 +32,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Layout
-      actions={
-        <Link className="neo-button" to="/profile">
-          Public Profile
-          <ArrowRight size={16} />
-        </Link>
-      }
-      centered
-    >
+    <Layout centered narrow>
       <LoginCard
         email={email}
         error={error}
