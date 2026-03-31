@@ -1,12 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://certificate-management.onrender.com/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://certificate-management.onrender.com/api/:path*"
     },
     {
-      "source": "/(.*)",
-      "destination": "/"
+      "source": "/:path*",
+      "destination": "/index.html"
     }
   ]
 }
