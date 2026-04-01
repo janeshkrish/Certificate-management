@@ -25,6 +25,7 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "http://localhost:3000",
     ]
+    cors_origin_regex: str | None = None
 
     admin_email: EmailStr = "admin@example.com"
     admin_password: str = "Admin@123456"

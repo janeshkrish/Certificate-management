@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: certificate-management
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: API_V1_PREFIX
+        value: /api
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB
+        value: certificate_management
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRE_MINUTES
+        value: "480"
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CORS_ORIGIN_REGEX
+        value: '^https://.*\.vercel\.app$'
+      - key: ADMIN_EMAIL
+        value: admin@example.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_FULL_NAME
+        value: System Administrator
+      - key: FRONTEND_URL
+        sync: false
+      - key: PROFILE_OWNER_NAME
+        value: Your Name
+      - key: PROFILE_HEADLINE
+        value: AI & Software Certifications
+      - key: PROFILE_BIO
+        value: A curated portfolio of certifications, achievements, and verified learning milestones.
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: certificate-management
