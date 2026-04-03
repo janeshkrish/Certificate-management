@@ -20,7 +20,12 @@ from app.services.certificates import (
     normalize_issue_date,
     parse_object_id,
 )
-from app.services.storage import delete_file, upload_file
+from app.services.storage import (
+    ALLOWED_UPLOAD_CONTENT_TYPES,
+    delete_file,
+    get_supported_file_format,
+    upload_file,
+)
 
 
 router = APIRouter(prefix="/certificates", tags=["certificates"])
@@ -32,17 +37,16 @@ def _validate_upload(upload: UploadFile | None, required: bool = False) -> None:
     if upload is None:
         return
 
-    allowed_types = {
-        "application/pdf",
-        "image/png",
-        "image/jpeg",
-        "image/jpg",
-        "image/webp",
-    }
-    if upload.content_type not in allowed_types:
+    if get_supported_file_format(upload.filename) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only PDF, PNG, JPG, and WEBP files are supported.",
+            detail="Only PDF, PNG, JPG, JPEG, and WEBP files are supported.",
+        )
+
+    if upload.content_type not in ALLOWED_UPLOAD_CONTENT_TYPES and upload.content_type != "application/octet-stream":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported file type. Upload a PDF, PNG, JPG, JPEG, or WEBP file.",
         )
 
 
@@ -173,6 +177,8 @@ async def create_certificate(
         "file_url": storage_result["file_url"],
         "file_public_id": storage_result["file_public_id"],
         "file_resource_type": storage_result["file_resource_type"],
+        "file_format": storage_result["file_format"],
+        "file_version": storage_result["file_version"],
         "verification_link": verification_target,
         "description": payload.description,
         "visibility": payload.visibility.value,
@@ -262,6 +268,8 @@ async def update_certificate(
         updated_fields["file_url"] = storage_result["file_url"]
         updated_fields["file_public_id"] = storage_result["file_public_id"]
         updated_fields["file_resource_type"] = storage_result["file_resource_type"]
+        updated_fields["file_format"] = storage_result["file_format"]
+        updated_fields["file_version"] = storage_result["file_version"]
 
     merged = {**certificate, **updated_fields}
     issue_date_value = merged["issue_date"]

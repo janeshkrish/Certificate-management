@@ -46,6 +46,8 @@ class CertificateResponse(BaseModel):
     issue_date: date | None
     file_url: str
     file_public_id: str | None = None
+    file_resource_type: str | None = None
+    file_format: str | None = None
     verification_link: str | None = None
     description: str
     visibility: VisibilityEnum

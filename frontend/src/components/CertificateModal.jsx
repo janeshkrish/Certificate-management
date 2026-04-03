@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 
 import { formatDate, openExternalUrl, toTitleCase } from "../utils/format";
+import CertificateFileViewer from "./CertificateFileViewer";
 
 export default function CertificateModal({
   isOpen,
@@ -369,6 +370,8 @@ export default function CertificateModal({
             ) : certificate ? (
               <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">
                 <div className="space-y-5">
+                  <CertificateFileViewer certificate={certificate} />
+
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="neo-inset p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Issuer</p>
@@ -419,7 +422,7 @@ export default function CertificateModal({
                       type="button"
                     >
                       <FileText size={16} />
-                      View File
+                      Open File
                     </button>
                     {certificate.verification_link ? (
                       <button

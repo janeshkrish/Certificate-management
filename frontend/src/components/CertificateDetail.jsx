@@ -2,6 +2,7 @@ import { ArrowLeft, CalendarDays, ExternalLink, FileText, QrCode, ShieldCheck } 
 import { Link } from "react-router-dom";
 
 import { formatDate, openExternalUrl, toTitleCase } from "../utils/format";
+import CertificateFileViewer from "./CertificateFileViewer";
 
 export default function CertificateDetail({ certificate, domainHref }) {
   return (
@@ -25,6 +26,8 @@ export default function CertificateDetail({ certificate, domainHref }) {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(260px,0.8fr)]">
         <div className="space-y-4">
+          <CertificateFileViewer certificate={certificate} />
+
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="neo-inset p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Issuer</p>
@@ -75,7 +78,7 @@ export default function CertificateDetail({ certificate, domainHref }) {
               type="button"
             >
               <FileText size={16} />
-              View File
+              Open File
             </button>
             {certificate.verification_link ? (
               <button

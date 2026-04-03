@@ -1,5 +1,8 @@
 from datetime import date, datetime
 
+from app.services.certificates import generate_qr_code_data_url
+from app.services.storage import normalize_storage_asset
+
 
 def serialize_certificate(document: dict) -> dict:
     issue_date = document.get("issue_date")
@@ -13,6 +16,20 @@ def serialize_certificate(document: dict) -> dict:
     if domain_id is not None and "_id" not in domain:
         domain["_id"] = domain_id
 
+    storage_asset = normalize_storage_asset(
+        file_url=document.get("file_url"),
+        public_id=document.get("file_public_id"),
+        resource_type=document.get("file_resource_type"),
+        file_format=document.get("file_format"),
+        file_version=document.get("file_version"),
+    )
+    qr_target = document.get("verification_link") or storage_asset["file_url"]
+    stored_qr_code = document.get("qr_code_data_url")
+    qr_code_data_url = stored_qr_code
+    if qr_target and (not stored_qr_code or document.get("verification_link") is None):
+        if qr_target != document.get("file_url") or not stored_qr_code:
+            qr_code_data_url = generate_qr_code_data_url(qr_target)
+
     return {
         "id": str(document["_id"]),
         "certificate_number": document["certificate_number"],
@@ -24,13 +41,15 @@ def serialize_certificate(document: dict) -> dict:
         },
         "issuer": document["issuer"],
         "issue_date": issue_date,
-        "file_url": document["file_url"],
-        "file_public_id": document.get("file_public_id"),
+        "file_url": storage_asset["file_url"],
+        "file_public_id": storage_asset["file_public_id"],
+        "file_resource_type": storage_asset["file_resource_type"],
+        "file_format": storage_asset["file_format"],
         "verification_link": document.get("verification_link"),
         "description": document["description"],
         "visibility": document["visibility"],
         "data_hash": document["data_hash"],
-        "qr_code_data_url": document["qr_code_data_url"],
+        "qr_code_data_url": qr_code_data_url or "",
         "created_at": document["created_at"],
         "updated_at": document["updated_at"],
     }

@@ -24,10 +24,64 @@ export function toTitleCase(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-export function openExternalUrl(url) {
-  if (!url || typeof window === "undefined") {
-    return;
+export function isHttpUrl(value) {
+  if (!value) {
+    return false;
   }
 
-  window.open(url, "_blank", "noopener,noreferrer");
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+export function getCertificateFileKind(fileUrl, fileFormat, fileResourceType) {
+  const normalizedFormat = String(fileFormat || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^\./, "");
+
+  if (normalizedFormat === "pdf") {
+    return "pdf";
+  }
+
+  if (["png", "jpg", "jpeg", "webp", "gif", "bmp", "svg", "avif"].includes(normalizedFormat)) {
+    return "image";
+  }
+
+  const normalizedResourceType = String(fileResourceType || "").trim().toLowerCase();
+  if (normalizedResourceType === "image") {
+    return "image";
+  }
+
+  if (!isHttpUrl(fileUrl)) {
+    return "unknown";
+  }
+
+  try {
+    const pathname = new URL(fileUrl).pathname.toLowerCase();
+    if (pathname.endsWith(".pdf")) {
+      return "pdf";
+    }
+    if (/\.(png|jpe?g|webp|gif|bmp|svg|avif)$/.test(pathname)) {
+      return "image";
+    }
+    if (pathname.includes("/image/upload/")) {
+      return "image";
+    }
+  } catch {
+    return "unknown";
+  }
+
+  return "unknown";
+}
+
+export function openExternalUrl(url) {
+  if (typeof window === "undefined" || !isHttpUrl(url)) {
+    return false;
+  }
+
+  return Boolean(window.open(url, "_blank", "noopener,noreferrer"));
 }
