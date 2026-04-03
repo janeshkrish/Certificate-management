@@ -56,7 +56,7 @@ export default function CertificateFileViewer({ certificate, className = "" }) {
 
       <div className="mt-4 overflow-hidden rounded-[28px] border border-white/70 bg-white/80">
         {!hasValidUrl ? (
-          renderFallbackState("Certificate file URL is missing or invalid.")
+          renderFallbackState("File unavailable.")
         ) : previewFailed ? (
           renderFallbackState("Preview unavailable for this certificate.")
         ) : fileKind === "pdf" ? (

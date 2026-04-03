@@ -14,8 +14,34 @@ export function setAuthToken(token) {
 }
 
 export function getApiErrorMessage(error, fallbackMessage = "Something went wrong.") {
+  const detail = error?.response?.data?.detail;
+  if (typeof detail === "string" && detail.trim()) {
+    return detail;
+  }
+
+  if (Array.isArray(detail)) {
+    const messages = detail
+      .map((item) => {
+        if (typeof item === "string") {
+          return item;
+        }
+        if (item && typeof item === "object" && typeof item.msg === "string") {
+          return item.msg;
+        }
+        return "";
+      })
+      .filter(Boolean);
+
+    if (messages.length) {
+      return messages.join(", ");
+    }
+  }
+
+  if (detail && typeof detail === "object") {
+    return JSON.stringify(detail);
+  }
+
   return (
-    error?.response?.data?.detail ||
     error?.message ||
     fallbackMessage
   );
@@ -50,6 +76,11 @@ export async function fetchCertificates(params = {}) {
   return data;
 }
 
+export async function fetchCertificate(certificateId) {
+  const { data } = await api.get(`/certificates/${certificateId}`);
+  return data;
+}
+
 export async function createCertificate(formData) {
   const { data } = await api.post("/certificates", formData, {
     headers: { "Content-Type": "multipart/form-data" }
@@ -69,4 +100,3 @@ export async function removeCertificate(certificateId) {
 }
 
 export default api;
-

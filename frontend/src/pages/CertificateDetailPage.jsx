@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { fetchProfile, getApiErrorMessage } from "../api/client";
+import { fetchCertificate, getApiErrorMessage } from "../api/client";
 import CertificateDetail from "../components/CertificateDetail";
 import Layout from "../components/Layout";
 import LoadingState from "../components/LoadingState";
@@ -19,19 +19,24 @@ export default function CertificateDetailPage() {
       setLoading(true);
       setError("");
 
-      try {
-        const response = await fetchProfile();
-        const nextCertificate = response.certificates.find((item) => item.id === id) || null;
-
-        if (!nextCertificate) {
-          throw new Error("Certificate not found.");
+      if (!id) {
+        if (active) {
+          setCertificate(null);
+          setError("Certificate not found.");
+          setLoading(false);
         }
+        return;
+      }
+
+      try {
+        const nextCertificate = await fetchCertificate(id);
 
         if (active) {
           setCertificate(nextCertificate);
         }
       } catch (requestError) {
         if (active) {
+          setCertificate(null);
           setError(getApiErrorMessage(requestError, "Failed to load certificate."));
         }
       } finally {
@@ -70,7 +75,7 @@ export default function CertificateDetailPage() {
     <Layout narrow>
       <CertificateDetail
         certificate={certificate}
-        domainHref={`/domain/${certificate.domain.id}`}
+        domainHref={certificate?.domain?.id ? `/domain/${certificate.domain.id}` : ""}
       />
     </Layout>
   );

@@ -74,6 +74,41 @@ async def _get_certificate_or_404(certificate_id: str) -> dict:
     return certificate
 
 
+async def _get_certificate_with_domain_or_404(
+    certificate_id: str,
+    *,
+    include_private: bool,
+) -> dict:
+    try:
+        object_id = parse_object_id(certificate_id, "certificate id")
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+    database = get_database()
+    filters: dict = {"_id": object_id}
+    if not include_private:
+        filters["visibility"] = "public"
+
+    certificate = await database.certificates.aggregate(
+        [
+            {"$match": filters},
+            {
+                "$lookup": {
+                    "from": "domains",
+                    "localField": "domain_id",
+                    "foreignField": "_id",
+                    "as": "domain",
+                }
+            },
+            {"$unwind": "$domain"},
+        ]
+    ).to_list(length=1)
+
+    if not certificate:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Certificate not found.")
+    return certificate[0]
+
+
 @router.get("", response_model=list[CertificateResponse])
 async def list_certificates(
     domain: str | None = Query(default=None),
@@ -117,6 +152,18 @@ async def list_certificates(
     ]
     certificates = await database.certificates.aggregate(pipeline).to_list(length=None)
     return [CertificateResponse.model_validate(serialize_certificate(certificate)) for certificate in certificates]
+
+
+@router.get("/{certificate_id}", response_model=CertificateResponse)
+async def get_certificate(
+    certificate_id: str,
+    user=Depends(get_optional_current_user),
+) -> CertificateResponse:
+    certificate = await _get_certificate_with_domain_or_404(
+        certificate_id,
+        include_private=user is not None,
+    )
+    return CertificateResponse.model_validate(serialize_certificate(certificate))
 
 
 @router.post("", response_model=CertificateResponse, status_code=status.HTTP_201_CREATED)
