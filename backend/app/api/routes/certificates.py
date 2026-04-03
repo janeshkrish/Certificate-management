@@ -31,6 +31,14 @@ from app.services.storage import (
 router = APIRouter(prefix="/certificates", tags=["certificates"])
 
 
+def _normalize_optional_form_value(value: str | None) -> str | None:
+    if value is None:
+        return None
+
+    normalized = value.strip()
+    return normalized or None
+
+
 def _validate_upload(upload: UploadFile | None, required: bool = False) -> None:
     if required and upload is None:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="File is required.")
@@ -179,7 +187,7 @@ async def create_certificate(
     _admin=Depends(get_current_admin),
 ) -> CertificateResponse:
     _validate_upload(file, required=True)
-    verification_link_value = verification_link.strip() if verification_link else None
+    verification_link_value = _normalize_optional_form_value(verification_link)
 
     try:
         payload = CertificateCreatePayload.model_validate(
@@ -270,7 +278,7 @@ async def update_certificate(
 ) -> CertificateResponse:
     _validate_upload(file)
     certificate = await _get_certificate_or_404(certificate_id)
-    verification_link_value = verification_link.strip() if verification_link is not None else None
+    verification_link_value = _normalize_optional_form_value(verification_link)
 
     try:
         payload = CertificateUpdatePayload.model_validate(

@@ -176,6 +176,10 @@ export default function DashboardPage() {
         navigate("/login", { replace: true });
         return;
       }
+      if (requestError?.response?.status === 422) {
+        setError("Invalid input. Please check required fields.");
+        return;
+      }
       setError(getApiErrorMessage(requestError, "Failed to save certificate."));
     } finally {
       setSubmitting(false);

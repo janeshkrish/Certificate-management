@@ -171,7 +171,10 @@ export default function CertificateModal({
 
     Object.entries(form).forEach(([key, value]) => {
       if (key === "verification_link") {
-        payload.append(key, String(value || ""));
+        const trimmedValue = String(value || "").trim();
+        if (trimmedValue) {
+          payload.append(key, trimmedValue);
+        }
         return;
       }
 
