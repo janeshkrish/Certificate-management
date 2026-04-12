@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 
 import { getCertificateFileKind, isHttpUrl, openExternalUrl } from "../utils/format";
 
-export default function CertificateFileViewer({ certificate, className = "" }) {
+export default function CertificateFileViewer({ certificate, className = "", variant = "default" }) {
   const [imageFailed, setImageFailed] = useState(false);
   const [pdfFailed, setPdfFailed] = useState(false);
   const fileUrl = certificate?.file_url?.trim() || "";
   const fileKind = getCertificateFileKind(fileUrl, certificate?.file_format, certificate?.file_resource_type);
   const hasValidUrl = isHttpUrl(fileUrl);
   const pdfSrc = fileKind === "pdf" && hasValidUrl ? `${fileUrl}#toolbar=0&navpanes=0&scrollbar=1` : "";
+  const isModalVariant = variant === "modal";
   const previewFailed =
     !hasValidUrl ||
     fileKind === "unknown" ||
@@ -40,7 +41,7 @@ export default function CertificateFileViewer({ certificate, className = "" }) {
   }
 
   return (
-    <div className={`neo-panel-soft p-5 ${className}`.trim()}>
+    <div className={`neo-panel-soft min-h-0 p-4 sm:p-5 ${className}`.trim()}>
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Certificate File</p>
         <button
@@ -54,7 +55,7 @@ export default function CertificateFileViewer({ certificate, className = "" }) {
         </button>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-[28px] border border-white/70 bg-white/80">
+      <div className="mt-4 min-h-0 overflow-hidden rounded-[28px] border border-white/70 bg-white/80">
         {!hasValidUrl ? (
           renderFallbackState("File unavailable.")
         ) : previewFailed ? (
@@ -62,7 +63,11 @@ export default function CertificateFileViewer({ certificate, className = "" }) {
         ) : fileKind === "pdf" ? (
           <div>
             <iframe
-              className="min-h-[420px] w-full bg-white"
+              className={
+                isModalVariant
+                  ? "h-[70vh] w-full rounded-xl bg-white sm:h-[80vh]"
+                  : "min-h-[420px] w-full bg-white"
+              }
               loading="lazy"
               onError={() => setPdfFailed(true)}
               referrerPolicy="no-referrer"
@@ -73,7 +78,9 @@ export default function CertificateFileViewer({ certificate, className = "" }) {
         ) : fileKind === "image" && !imageFailed ? (
           <img
             alt={`Certificate file for ${certificate?.title || "certificate"}`}
-            className="max-h-[520px] w-full object-contain bg-slate-50"
+            className={`w-full h-auto object-contain rounded-xl bg-slate-50 ${
+              isModalVariant ? "" : "max-h-[520px]"
+            }`.trim()}
             loading="lazy"
             onError={() => setImageFailed(true)}
             src={fileUrl}

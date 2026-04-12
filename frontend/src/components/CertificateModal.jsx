@@ -56,7 +56,7 @@ export default function CertificateModal({
 
     document.addEventListener("keydown", handleEscape);
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previousOverflow || "auto";
       document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen, onClose]);
@@ -197,14 +197,14 @@ export default function CertificateModal({
       {isOpen ? (
         <motion.div
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           onClick={onClose}
         >
           <motion.div
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="neo-panel relative max-h-[92vh] w-full max-w-4xl overflow-y-auto p-5 sm:p-7"
+            className="neo-panel relative flex min-h-0 max-h-[90dvh] w-full max-w-md flex-col gap-4 overflow-auto overflow-y-auto rounded-2xl p-4 sm:max-w-lg sm:p-6 md:max-w-xl lg:max-w-4xl"
             exit={{ opacity: 0, y: 18, scale: 0.98 }}
             initial={{ opacity: 0, y: 24, scale: 0.96 }}
             transition={{ duration: 0.24, ease: "easeOut" }}
@@ -247,7 +247,7 @@ export default function CertificateModal({
             </div>
 
             {isFormMode ? (
-              <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+              <form className="min-h-0 space-y-5" onSubmit={handleSubmit}>
                 {requestError ? (
                   <div className="rounded-[18px] bg-dangerSoft px-4 py-3 text-sm font-semibold text-rose-600">
                     {requestError}
@@ -371,9 +371,9 @@ export default function CertificateModal({
                 </div>
               </form>
             ) : certificate ? (
-              <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">
-                <div className="space-y-5">
-                  <CertificateFileViewer certificate={certificate} />
+              <div className="grid min-h-0 gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">
+                <div className="min-h-0 space-y-5">
+                  <CertificateFileViewer certificate={certificate} className="min-h-0" variant="modal" />
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="neo-inset p-4">
